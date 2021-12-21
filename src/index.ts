@@ -207,8 +207,8 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const { access_token, refresh_token, scope, ...extraParams } =
       await response.json();
     return {
-      accessToken: access_token,
-      refreshToken: refresh_token,
+      accessToken: access_token as string,
+      refreshToken: refresh_token as string,
       extraParams: { ...extraParams, scope: scope.split(" ") },
     } as const;
   }
