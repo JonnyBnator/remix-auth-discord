@@ -9,11 +9,11 @@ module.exports = {
     "plugin:prettier/recommended",
   ],
   rules: {
-    "prefer-const": "off",
+    "prefer-const": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "no-unused-vars": "off",
-    "no-var": "off",
+    "no-var": "error",
     "unicorn/no-null": "off",
     "unicorn/prefer-node-protocol": "off",
     "unicorn/filename-case": "off",

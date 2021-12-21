@@ -172,7 +172,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
   }
 
   protected authorizationParams() {
-    let params = new URLSearchParams({
+    const params = new URLSearchParams({
       scope: this.scope.join(" "),
     });
     if (this.prompt) params.set("prompt", this.prompt);
@@ -180,14 +180,14 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
   }
 
   protected async userProfile(accessToken: string): Promise<DiscordProfile> {
-    let response = await fetch(this.userInfoURL, {
+    const response = await fetch(this.userInfoURL, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    let raw: DiscordProfile["__json"] = await response.json();
+    const raw: DiscordProfile["__json"] = await response.json();
 
-    let profile: DiscordProfile = {
+    const profile: DiscordProfile = {
       provider: "discord",
       id: raw.id,
       displayName: raw.username,
@@ -204,7 +204,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     refreshToken: string;
     extraParams: DiscordExtraParams;
   }> {
-    let { access_token, refresh_token, scope, ...extraParams } =
+    const { access_token, refresh_token, scope, ...extraParams } =
       await response.json();
     return {
       accessToken: access_token,
