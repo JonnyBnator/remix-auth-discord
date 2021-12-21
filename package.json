@@ -1,5 +1,5 @@
 {
-  "name": "remix-auth-strategy-template",
+  "name": "remix-auth-discord",
   "version": "0.0.0",
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
@@ -15,13 +15,30 @@
     "remix-auth",
     "auth",
     "authentication",
-    "strategy"
+    "strategy",
+    "discord"
   ],
   "license": "MIT",
   "files": [
     "build",
     "package.json",
     "README.md"
+  ],
+  "repository": {
+    "url": "https://github.com/JonnyBnator/remix-auth-discord",
+    "type": "git"
+  },
+  "homepage": "https://github.com/JonnyBnator/remix-auth-discord#readme",
+  "author": {
+    "name": "Jonathan Brockhaus",
+    "email": "JonnyBnator@web.de"
+  },
+  "contributors": [
+    {
+      "name": "Lennart Gastler",
+      "email": "lennart@lgastler.de",
+      "url": "https://lennartgastler.de"
+    }
   ],
   "peerDependencies": {
     "@remix-run/server-runtime": "^1.0.0"
@@ -52,6 +69,7 @@
     "typescript": "^4.3.5"
   },
   "dependencies": {
-    "remix-auth": "^3.0.0"
+    "remix-auth": "^3.0.0",
+    "remix-auth-oauth2": "^1.0.0"
   }
 }

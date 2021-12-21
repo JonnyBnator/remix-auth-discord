@@ -1,48 +1,118 @@
-# Remix Auth - Strategy Template
+# DiscordStrategy
 
-> A template for creating a new Remix Auth strategy.
+The Discord strategy is used to authenticate users against aDiscord account. It extends the OAuth2Strategy.
 
-If you want to create a new strategy for Remix Auth, you could use this as a template for your repository.
+## Usage
 
-The repo installs the latest version of Remix Auth and do the setup for you to have tests, linting and typechecking.
+### Create an OAuth application
 
-## How to use it
+First go to [the Discord Developer Portal](https://discord.com/developers/applications) to create a new application and get a client ID and secret. The client ID and secret are located in the OAuth2 Tab of your Application. Once you are there you can already add your first redirect url, f.e. `http://localhost:3000/auth/discord/callback`.
 
-1. In the `package.json` change `name` to your strategy name, also add a description and ideally an author, repository and homepage keys.
-2. In `src/index.ts` change the `MyStrategy` for the strategy name you want to use.
-3. Implement the strategy flow inside the `authenticate` method. Use `this.success` and `this.failure` to correctly send finish the flow.
-4. In `tests/index.test.ts` change the tests to use your strategy and test it. Inside the tests you have access to `jest-fetch-mock` to mock any fetch you may need to do.
-5. Once you are ready, set the secrets on Github
-   - `NPM_TOKEN`: The token for the npm registry
-   - `GIT_USER_NAME`: The you want the bump workflow to use in the commit.
-   - `GIT_USER_EMAIL`: The email you want the bump workflow to use in the commit.
+You can find the detailed Discord OAuth Documentation [here](https://discord.com/developers/docs/topics/oauth2#oauth2).
 
-## Scripts
+### Create your session storage
 
-- `build`: Build the project for production using the TypeScript compiler (strips the types).
-- `typecheck`: Check the project for type errors, this also happens in build but it's useful to do in development.
-- `lint`: Runs ESLint againt the source codebase to ensure it pass the linting rules.
-- `test`: Runs all the test using Jest.
+```ts
+// app/session.server.ts
+import { createCookieSessionStorage } from "remix";
 
-## Documentations
+export let sessionStorage = createCookieSessionStorage({
+  cookie: {
+    name: "_session",
+    sameSite: "lax",
+    path: "/",
+    httpOnly: true,
+    secrets: ["s3cr3t"],
+    secure: process.env.NODE_ENV === "production",
+  },
+});
 
-To facilitae creating a documentation for your strategy, you can use the following Markdown
-
-```markdown
-# Strategy Name
-
-<!-- Description -->
-
-## Supported runtimes
-
-| Runtime    | Has Support |
-| ---------- | ----------- |
-| Node.js    | ✅          |
-| Cloudflare | ✅          |
-
-<!-- If it doesn't support one runtime, explain here why -->
-
-## How to use
-
-<!-- Explain how to use the strategy, here you should tell what options it expects from the developer when instantiating the strategy -->
+export let { getSession, commitSession, destroySession } = sessionStorage;
 ```
+
+### Create the strategy instance
+
+```ts
+// app/auth.server.ts
+import { Authenticator, DiscordStrategy } from "remix-auth";
+
+import { sessionStorage } from "~/session.server";
+import type { User } from "~/models/user.model";
+import { getUserByEmail } from "~/models/user.model";
+
+let auth = new Authenticator<User>(sessionStorage);
+
+let discordStrategy = new DiscordStrategy(
+  {
+    clientID: "YOUR_CLIENT_ID",
+    clientSecret: "YOUR_CLIENT_SECRET",
+    callbackURL: "https://example.com/auth/discord/callback",
+  },
+  async (accessToken, refreshToken, extraParams, profile) => {
+    // Get the user data from your DB or API using the tokens and profile
+    return getUserByEmail(profile.emails[0].value);
+  }
+);
+
+auth.use(discordStrategy);
+```
+
+### Setup your routes
+
+```tsx
+// app/routes/login.tsx
+import { Form } from "remix";
+
+export default function Login() {
+  return (
+    <Form action="/auth/discord" method="post">
+      <button>Login with Discord</button>
+    </Form>
+  );
+}
+```
+
+```tsx
+// app/routes/auth/discord.tsx
+import type { ActionFunction, LoaderFunction } from "remix";
+import { redirect } from "remix";
+
+import { auth } from "~/auth.server";
+
+export let loader: LoaderFunction = () => redirect("/login");
+
+export let action: ActionFunction = ({ request }) => {
+  return auth.authenticate("discord", request);
+};
+```
+
+```tsx
+// app/routes/auth/discord.callback.tsx
+import type { LoaderFunction } from "remix";
+import { auth } from "~/auth.server";
+
+export let loader: LoaderFunction = ({ request }) => {
+  return auth.authenticate("discord", request, {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+  });
+};
+```
+
+```tsx
+// app/routes/dashboard.tsx
+import { LoaderFunction } from "remix";
+import { auth } from "~/auth.server";
+
+export let loader: LoaderFunction = async ({ request }) => {
+  return await auth.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+};
+
+export default function DashboardPage() {
+  return <div>Dashboard</div>;
+}
+```
+
+That's it, try going to `/login` and press the Login button to start the authentication flow. Make sure to store all your Secrets properly and setup the correct redirect_url once you go to production.
