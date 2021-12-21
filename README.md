@@ -1,6 +1,6 @@
 # DiscordStrategy
 
-The Discord strategy is used to authenticate users against aDiscord account. It extends the OAuth2Strategy.
+The Discord strategy is used to authenticate users against a Discord account. It extends the OAuth2Strategy.
 
 ## Usage
 
@@ -47,6 +47,8 @@ let discordStrategy = new DiscordStrategy(
     clientID: "YOUR_CLIENT_ID",
     clientSecret: "YOUR_CLIENT_SECRET",
     callbackURL: "https://example.com/auth/discord/callback",
+    // Provide all the scopes you want as an array
+    scope: ["identify", "email", "guilds"],
   },
   async (accessToken, refreshToken, extraParams, profile) => {
     // Get the user data from your DB or API using the tokens and profile
