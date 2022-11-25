@@ -36,6 +36,47 @@ export type DiscordScope =
   | "webhook.incoming";
 
 /**
+ * These are all the available Guild Features
+ * @see https://discord.com/developers/docs/resources/guild#guild-object-guild-features
+ */
+type DiscordGuildFeature =
+  | "ANIMATED_BANNER"
+  | "ANIMATED_ICON"
+  | "APPLICATION_COMMAND_PERMISSIONS_V2"
+  | "AUTO_MODERATION"
+  | "BANNER"
+  | "COMMUNITY"
+  | "DEVELOPER_SUPPORT_SERVER"
+  | "DISCOVERABLE"
+  | "FEATURABLE"
+  | "INVITES_DISABLED"
+  | "INVITE_SPLASH"
+  | "MEMBER_VERIFICATION_GATE_ENABLED"
+  | "MONETIZATION_ENABLED"
+  | "MORE_STICKERS"
+  | "NEWS"
+  | "PARTNERED"
+  | "PREVIEW_ENABLED"
+  | "ROLE_ICONS"
+  | "TICKETED_EVENTS_ENABLED"
+  | "VANITY_URL"
+  | "VERIFIED"
+  | "VIP_REGIONS"
+  | "WELCOME_SCREEN_ENABLED";
+
+/**
+ * This represents a Discord Guild as returned by the API with the guilds scope enabled.
+ * @see https://discord.com/developers/docs/resources/user#get-current-user-guilds
+ */
+export interface DiscordGuild {
+  id: string;
+  name: string;
+  icon: string | null;
+  owner: boolean;
+  permissions: string;
+  features: Array<DiscordGuildFeature>;
+}
+/**
  * This interface declares what configuration the strategy needs from the
  * developer to correctly work.
  */
