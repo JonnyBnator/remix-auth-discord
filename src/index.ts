@@ -5,6 +5,8 @@ import {
   OAuth2StrategyVerifyParams,
 } from "remix-auth-oauth2";
 
+const discordApiBaseURL = "https://discord.com/api/v10";
+
 /**
  * These are all the available scopes Discord allows.
  * @see https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes
@@ -181,7 +183,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
 
   private scope: Array<DiscordScope>;
   private prompt?: "none" | "consent";
-  private userInfoURL = "https://discord.com/api/users/@me";
+  private userInfoURL = `${discordApiBaseURL}/users/@me`;
 
   constructor(
     {
@@ -201,8 +203,8 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
         clientID,
         clientSecret,
         callbackURL,
-        authorizationURL: "https://discord.com/api/oauth2/authorize",
-        tokenURL: "https://discord.com/api/oauth2/token",
+        authorizationURL: `${discordApiBaseURL}/oauth2/authorize`,
+        tokenURL: `${discordApiBaseURL}/oauth2/token`,
       },
       verify
     );
