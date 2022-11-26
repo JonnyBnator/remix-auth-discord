@@ -14,9 +14,9 @@ You can find the detailed Discord OAuth Documentation [here](https://discord.com
 
 ```ts
 // app/session.server.ts
-import { createCookieSessionStorage } from "remix";
+import { createCookieSessionStorage } from "@remix-run/node";
 
-export let sessionStorage = createCookieSessionStorage({
+export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "_session",
     sameSite: "lax",
@@ -27,22 +27,21 @@ export let sessionStorage = createCookieSessionStorage({
   },
 });
 
-export let { getSession, commitSession, destroySession } = sessionStorage;
+export const { getSession, commitSession, destroySession } = sessionStorage;
 ```
 
 ### Create the strategy instance
 
 ```ts
 // app/auth.server.ts
-import { Authenticator, DiscordStrategy } from "remix-auth";
-
+import { Authenticator } from "remix-auth";
+import type { DiscordProfile, PartialDiscordGuild } from "remix-auth-discord";
+import { DiscordStrategy } from "remix-auth-discord";
 import { sessionStorage } from "~/session.server";
-import type { User } from "~/models/user.model";
-import { getUserByEmail } from "~/models/user.model";
 
-let auth = new Authenticator<User>(sessionStorage);
+const auth = new Authenticator<User>(sessionStorage);
 
-let discordStrategy = new DiscordStrategy(
+const discordStrategy = new DiscordStrategy(
   {
     clientID: "YOUR_CLIENT_ID",
     clientSecret: "YOUR_CLIENT_SECRET",
@@ -50,9 +49,50 @@ let discordStrategy = new DiscordStrategy(
     // Provide all the scopes you want as an array
     scope: ["identify", "email", "guilds"],
   },
-  async (accessToken, refreshToken, extraParams, profile) => {
-    // Get the user data from your DB or API using the tokens and profile
-    return getUserByEmail(profile.emails[0].value);
+  async ({
+    accessToken,
+    refreshToken,
+    extraParams,
+    profile,
+  }): Promise<DiscordUser> => {
+    /**
+     * Get the user data from your DB or API using the tokens and profile
+     * For example query all the user guilds
+     * IMPORTANT: This can quickly fill the session storage to be too big.
+     * So make sure you only return the values from the guilds (and the guilds) you actually need
+     * (eg. omit the features)
+     * and if that's still to big, you need to store the guilds some other way. (Your own DB)
+     *
+     * Either way, this is how you could retrieve the user guilds.
+     */
+    const userGuilds: Array<PartialDiscordGuild> = await (
+      await fetch("https://discord.com/api/v10/users/@me/guilds", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+    )?.json();
+    /**
+     * In this example we're only interested in guilds where the user is either the owner or has the `MANAGE_GUILD` permission (This check includes the `ADMINISTRATOR` permission)
+     */
+    const guilds: Array<PartialDiscordGuild> = userGuilds.filter(
+      (g) => g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20)
+    );
+
+    /**
+     * Construct the user profile to your liking by adding data you fetched etc.
+     * and only returning the data that you actually need for your application.
+     */
+    return {
+      id: profile.id,
+      displayName: profile.__json.username,
+      avatar: profile.__json.avatar,
+      discriminator: profile.__json.discriminator,
+      email: profile.__json.email,
+      accessToken,
+      guilds,
+      refreshToken,
+    };
   }
 );
 
@@ -63,7 +103,7 @@ auth.use(discordStrategy);
 
 ```tsx
 // app/routes/login.tsx
-import { Form } from "remix";
+import { Form } from "@remix-run/react";
 
 export default function Login() {
   return (
@@ -76,9 +116,8 @@ export default function Login() {
 
 ```tsx
 // app/routes/auth/discord.tsx
-import type { ActionFunction, LoaderFunction } from "remix";
-import { redirect } from "remix";
-
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { auth } from "~/auth.server";
 
 export let loader: LoaderFunction = () => redirect("/login");
@@ -90,7 +129,7 @@ export let action: ActionFunction = ({ request }) => {
 
 ```tsx
 // app/routes/auth/discord.callback.tsx
-import type { LoaderFunction } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
 import { auth } from "~/auth.server";
 
 export let loader: LoaderFunction = ({ request }) => {
@@ -103,8 +142,10 @@ export let loader: LoaderFunction = ({ request }) => {
 
 ```tsx
 // app/routes/dashboard.tsx
-import { LoaderFunction } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { auth } from "~/auth.server";
+import type { DiscordUser } from "~/auth.server";
 
 export let loader: LoaderFunction = async ({ request }) => {
   return await auth.isAuthenticated(request, {
@@ -113,7 +154,15 @@ export let loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function DashboardPage() {
-  return <div>Dashboard</div>;
+  const user = useLoaderData<DiscordUser>();
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <h2>
+        Welcome {user.displayName}#{user.discriminator}
+      </h2>
+    </div>
+  );
 }
 ```
 
