@@ -70,7 +70,7 @@ type DiscordGuildFeature =
  * This represents a Discord Guild as returned by the API with the guilds scope enabled.
  * @see https://discord.com/developers/docs/resources/user#get-current-user-guilds
  */
-export interface DiscordGuild {
+export interface PartialDiscordGuild {
   id: string;
   name: string;
   icon: string | null;
