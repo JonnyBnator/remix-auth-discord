@@ -39,7 +39,18 @@ import type { DiscordProfile, PartialDiscordGuild } from "remix-auth-discord";
 import { DiscordStrategy } from "remix-auth-discord";
 import { sessionStorage } from "~/session.server";
 
-const auth = new Authenticator<User>(sessionStorage);
+export interface DiscordUser {
+  id: DiscordProfile["id"];
+  displayName: DiscordProfile["displayName"];
+  avatar: DiscordProfile["__json"]["avatar"];
+  discriminator: DiscordProfile["__json"]["discriminator"];
+  email: DiscordProfile["__json"]["email"];
+  guilds?: Array<PartialDiscordGuild>;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export const auth = new Authenticator<User>(sessionStorage);
 
 const discordStrategy = new DiscordStrategy(
   {
