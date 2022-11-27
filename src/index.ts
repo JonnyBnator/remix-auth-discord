@@ -67,6 +67,41 @@ type DiscordGuildFeature =
   | "WELCOME_SCREEN_ENABLED";
 
 /**
+ * These are all the available Discord locales
+ * @see https://discord.com/developers/docs/reference#locales
+ */
+type DiscordLocale =
+  | "da"
+  | "de"
+  | "en-GB"
+  | "en-US"
+  | "es-ES"
+  | "fr"
+  | "hr"
+  | "it"
+  | "lt"
+  | "hu"
+  | "nl"
+  | "no"
+  | "pl"
+  | "pt-BR"
+  | "ro"
+  | "fi"
+  | "sv-SE"
+  | "vi"
+  | "tr"
+  | "cs"
+  | "el"
+  | "bg"
+  | "ru"
+  | "uk"
+  | "hi"
+  | "th"
+  | "zh-CN"
+  | "ja"
+  | "zh-TW"
+  | "ko";
+/**
  * This represents a Discord Guild as returned by the API with the guilds scope enabled.
  * @see https://discord.com/developers/docs/resources/user#get-current-user-guilds
  */
@@ -147,7 +182,7 @@ export interface DiscordProfile extends OAuth2Profile {
     /**
      * The user's chosen language option
      */
-    locale?: string;
+    locale?: DiscordLocale;
     /**
      * Whether the email on this account has been verified
      */
