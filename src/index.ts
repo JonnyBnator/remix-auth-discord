@@ -209,12 +209,14 @@ export interface DiscordProfile extends OAuth2Profile {
   };
 }
 
+export const DiscordStrategyDefaultName = "discord";
+
 export class DiscordStrategy<User> extends OAuth2Strategy<
   User,
   DiscordProfile,
   DiscordExtraParams
 > {
-  name = "discord";
+  name = DiscordStrategyDefaultName;
 
   private scope: Array<DiscordScope>;
   private prompt?: "none" | "consent";
@@ -266,7 +268,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const raw: DiscordProfile["__json"] = await response.json();
 
     const profile: DiscordProfile = {
-      provider: "discord",
+      provider: DiscordStrategyDefaultName,
       id: raw.id,
       displayName: raw.username,
       emails: raw.email ? [{ value: raw.email }] : undefined,
