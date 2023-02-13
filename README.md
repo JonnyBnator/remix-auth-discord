@@ -50,7 +50,7 @@ export interface DiscordUser {
   refreshToken: string;
 }
 
-export const auth = new Authenticator<User>(sessionStorage);
+export const auth = new Authenticator<DiscordUser>(sessionStorage);
 
 const discordStrategy = new DiscordStrategy(
   {
