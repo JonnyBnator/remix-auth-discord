@@ -246,14 +246,14 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
       verify
     );
 
-    this.scope = scope ? scope : ["identify", "email"];
+    this.scope = (scope ? scope : ["identify", "email"]).join(" ");
 
     this.prompt = prompt;
   }
 
   protected authorizationParams() {
     const params = new URLSearchParams({
-      scope: this.scope.join(" "),
+      scope: this.scope,
     });
     if (this.prompt) params.set("prompt", this.prompt);
     return params;
