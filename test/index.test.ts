@@ -1,4 +1,4 @@
-import { createCookieSessionStorage } from "@remix-run/server-runtime";
+import { createCookieSessionStorage } from "@remix-run/node";
 import { DiscordStrategy } from "../src";
 
 describe(DiscordStrategy, () => {
@@ -19,7 +19,7 @@ describe(DiscordStrategy, () => {
         callbackURL: "https://example.app/callback",
         scope: ["guilds"],
       },
-      verify
+      verify,
     );
 
     const request = new Request("https://example.app/auth/discord");
@@ -27,6 +27,9 @@ describe(DiscordStrategy, () => {
     try {
       await strategy.authenticate(request, sessionStorage, {
         sessionKey: "user",
+        sessionErrorKey: "auth:error",
+        sessionStrategyKey: "strategy",
+        name: "__session",
       });
     } catch (error) {
       if (!(error instanceof Response)) throw error;
@@ -47,7 +50,7 @@ describe(DiscordStrategy, () => {
         clientSecret: "CLIENT_SECRET",
         callbackURL: "https://example.app/callback",
       },
-      verify
+      verify,
     );
 
     const request = new Request("https://example.app/auth/discord");
@@ -55,6 +58,9 @@ describe(DiscordStrategy, () => {
     try {
       await strategy.authenticate(request, sessionStorage, {
         sessionKey: "user",
+        sessionErrorKey: "auth:error",
+        sessionStrategyKey: "strategy",
+        name: "__session",
       });
     } catch (error) {
       if (!(error instanceof Response)) throw error;
@@ -75,7 +81,7 @@ describe(DiscordStrategy, () => {
         clientSecret: "CLIENT_SECRET",
         callbackURL: "https://example.app/callback",
       },
-      verify
+      verify,
     );
 
     const request = new Request("https://example.app/auth/discord");
@@ -83,6 +89,9 @@ describe(DiscordStrategy, () => {
     try {
       await strategy.authenticate(request, sessionStorage, {
         sessionKey: "user",
+        sessionErrorKey: "auth:error",
+        sessionStrategyKey: "strategy",
+        name: "__session",
       });
     } catch (error) {
       if (!(error instanceof Response)) throw error;
