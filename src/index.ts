@@ -287,7 +287,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const profile: DiscordProfile = {
       provider: DiscordStrategyDefaultName,
       id: raw.id,
-      displayName: raw.username,
+      displayName: raw.global_name ?? raw.username,
       emails: raw.email ? [{ value: raw.email }] : undefined,
       photos: raw.avatar ? [{ value: raw.avatar }] : undefined,
       __json: raw,
