@@ -23,7 +23,8 @@
   "files": [
     "build",
     "package.json",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "url": "https://github.com/JonnyBnator/remix-auth-discord",
