@@ -43,7 +43,6 @@ export interface DiscordUser {
   id: DiscordProfile["id"];
   displayName: DiscordProfile["displayName"];
   avatar: DiscordProfile["__json"]["avatar"];
-  discriminator: DiscordProfile["__json"]["discriminator"];
   email: DiscordProfile["__json"]["email"];
   guilds?: Array<PartialDiscordGuild>;
   accessToken: string;
@@ -85,10 +84,16 @@ const discordStrategy = new DiscordStrategy(
     )?.json();
     /**
      * In this example we're only interested in guilds where the user is either the owner or has the `MANAGE_GUILD` permission (This check includes the `ADMINISTRATOR` permission)
+     * And not interested in the Guild Features
      */
-    const guilds: Array<PartialDiscordGuild> = userGuilds.filter(
-      (g) => g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20),
-    );
+    const guilds: Array<PartialDiscordGuild> = userGuilds
+      .filter(
+        (g) =>
+          g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20),
+      )
+      .map(({ features, ...rest }) => {
+        return { ...rest };
+      });
 
     /**
      * Construct the user profile to your liking by adding data you fetched etc.
@@ -96,13 +101,13 @@ const discordStrategy = new DiscordStrategy(
      */
     return {
       id: profile.id,
-      displayName: profile.__json.username,
+      displayName: profile.displayName,
       avatar: profile.__json.avatar,
-      discriminator: profile.__json.discriminator,
       email: profile.__json.email,
+      locale: profile.__json.locale,
       accessToken,
-      guilds,
       refreshToken,
+      guilds,
     };
   },
 );
