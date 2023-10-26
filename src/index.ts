@@ -22,6 +22,7 @@ export type DiscordScope =
   | "applications.store.update"
   | "bot"
   | "connections"
+  | "dm_channels.read"
   | "email"
   | "gdm.join"
   | "guilds"
@@ -30,11 +31,13 @@ export type DiscordScope =
   | "identify"
   | "messages.read"
   | "relationships.read"
+  | "role_connections.write"
   | "rpc"
   | "rpc.activities.write"
   | "rpc.notifications.read"
   | "rpc.voice.read"
   | "rpc.voice.write"
+  | "voice"
   | "webhook.incoming";
 
 /**
@@ -48,18 +51,22 @@ type DiscordGuildFeature =
   | "AUTO_MODERATION"
   | "BANNER"
   | "COMMUNITY"
+  | "CREATOR_MONETIZABLE_PROVISIONAL"
+  | "CREATOR_STORE_PAGE"
   | "DEVELOPER_SUPPORT_SERVER"
   | "DISCOVERABLE"
   | "FEATURABLE"
   | "INVITES_DISABLED"
   | "INVITE_SPLASH"
   | "MEMBER_VERIFICATION_GATE_ENABLED"
-  | "MONETIZATION_ENABLED"
   | "MORE_STICKERS"
   | "NEWS"
   | "PARTNERED"
   | "PREVIEW_ENABLED"
+  | "RAID_ALERTS_DISABLED"
   | "ROLE_ICONS"
+  | "ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE"
+  | "ROLE_SUBSCRIPTIONS_ENABLED"
   | "TICKETED_EVENTS_ENABLED"
   | "VANITY_URL"
   | "VERIFIED"
@@ -71,6 +78,7 @@ type DiscordGuildFeature =
  * @see https://discord.com/developers/docs/reference#locales
  */
 type DiscordLocale =
+  | "id"
   | "da"
   | "de"
   | "en-GB"
@@ -154,6 +162,10 @@ export interface DiscordProfile extends OAuth2Profile {
      */
     discriminator: string;
     /**
+     * The user's display name, if it is set. For bots, this is the application name
+     */
+    global_name: string | null;
+    /**
      * The user's avatar hash
      * @see https://discord.com/developers/docs/reference#image-formatting
      */
@@ -206,6 +218,11 @@ export interface DiscordProfile extends OAuth2Profile {
      * @see https://discord.com/developers/docs/resources/user#user-object-user-flags
      */
     public_flags?: number;
+    /**
+     * the user's avatar decoration hash
+     * @see https://discord.com/developers/docs/reference#image-formatting
+     */
+    avatar_decoration?: string | null;
   };
 }
 
