@@ -233,7 +233,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     verify: StrategyVerifyCallback<
       User,
       OAuth2StrategyVerifyParams<DiscordProfile, DiscordExtraParams>
-    >
+    >,
   ) {
     super(
       {
@@ -243,10 +243,10 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
         authorizationURL: `${discordApiBaseURL}/oauth2/authorize`,
         tokenURL: `${discordApiBaseURL}/oauth2/token`,
       },
-      verify
+      verify,
     );
 
-    this.scope = (scope ? scope : ["identify", "email"]).join(" ");
+    this.scope = (scope ?? ["identify", "email"]).join(" ");
 
     this.prompt = prompt;
   }
