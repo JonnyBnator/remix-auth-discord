@@ -87,7 +87,7 @@ const discordStrategy = new DiscordStrategy(
      * In this example we're only interested in guilds where the user is either the owner or has the `MANAGE_GUILD` permission (This check includes the `ADMINISTRATOR` permission)
      */
     const guilds: Array<PartialDiscordGuild> = userGuilds.filter(
-      (g) => g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20)
+      (g) => g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20),
     );
 
     /**
@@ -104,7 +104,7 @@ const discordStrategy = new DiscordStrategy(
       guilds,
       refreshToken,
     };
-  }
+  },
 );
 
 auth.use(discordStrategy);
@@ -126,7 +126,7 @@ export default function Login() {
 ```
 
 ```tsx
-// app/routes/auth/discord.tsx
+// app/routes/auth.discord.tsx
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { auth } from "~/auth.server";
@@ -139,7 +139,7 @@ export let action: ActionFunction = ({ request }) => {
 ```
 
 ```tsx
-// app/routes/auth/discord.callback.tsx
+// app/routes/auth.discord.callback.tsx
 import type { LoaderFunction } from "@remix-run/node";
 import { auth } from "~/auth.server";
 
