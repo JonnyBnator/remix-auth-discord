@@ -174,9 +174,7 @@ export default function DashboardPage() {
   return (
     <div>
       <h1>Dashboard</h1>
-      <h2>
-        Welcome {user.displayName}#{user.discriminator}
-      </h2>
+      <h2>Welcome {user.displayName}</h2>
     </div>
   );
 }
