@@ -218,7 +218,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
 > {
   name = DiscordStrategyDefaultName;
 
-  private scope: string;
+  scope: string;
   private prompt?: "none" | "consent";
   private userInfoURL = `${discordApiBaseURL}/users/@me`;
 
