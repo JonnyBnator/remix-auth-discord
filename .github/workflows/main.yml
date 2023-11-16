@@ -20,6 +20,8 @@ jobs:
 
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: Build
         run: npm run build
@@ -41,6 +43,8 @@ jobs:
 
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: Typecheck
         run: npm run typecheck
@@ -62,6 +66,8 @@ jobs:
 
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: Test
         run: npm run test -- --ci --coverage --maxWorkers=2
@@ -83,6 +89,8 @@ jobs:
 
       - name: Install dependencies
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: Build
         run: npm run build
