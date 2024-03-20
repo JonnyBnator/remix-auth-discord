@@ -84,6 +84,7 @@ type DiscordLocale =
   | "en-GB"
   | "en-US"
   | "es-ES"
+  | "es-419"
   | "fr"
   | "hr"
   | "it"
