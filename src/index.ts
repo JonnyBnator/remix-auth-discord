@@ -18,6 +18,7 @@ export type DiscordScope =
   | "applications.builds.upload"
   | "applications.commands"
   | "applications.commands.update"
+  | "applications.commands.permissions.update"
   | "applications.entitlements"
   | "applications.store.update"
   | "bot"
