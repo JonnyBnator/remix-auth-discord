@@ -39,12 +39,19 @@ import type { DiscordProfile, PartialDiscordGuild } from "remix-auth-discord";
 import { DiscordStrategy } from "remix-auth-discord";
 import { sessionStorage } from "~/session.server";
 
+/**
+ * In this example we will remove the features of the guilds the user is in,
+ * so we have to create our own (slightly changed) type for the guilds.
+ * You might need to edit this in your use case.
+ */
+type CustomDiscordGuild = Omit<PartialDiscordGuild, "features">;
+
 export interface DiscordUser {
   id: DiscordProfile["id"];
   displayName: DiscordProfile["displayName"];
   avatar: DiscordProfile["__json"]["avatar"];
   email: DiscordProfile["__json"]["email"];
-  guilds?: Array<PartialDiscordGuild>;
+  guilds?: Array<CustomDiscordGuild>;
   accessToken: string;
   refreshToken: string;
 }
@@ -84,9 +91,10 @@ const discordStrategy = new DiscordStrategy(
     )?.json();
     /**
      * In this example we're only interested in guilds where the user is either the owner or has the `MANAGE_GUILD` permission (This check includes the `ADMINISTRATOR` permission)
-     * And not interested in the Guild Features
+     * And not interested in the Guild Features.
+     * That's why we use the earlier created CustomDiscordGuild type now.
      */
-    const guilds: Array<PartialDiscordGuild> = userGuilds
+    const guilds: Array<CustomDiscordGuild> = userGuilds
       .filter(
         (g) =>
           g.owner || (BigInt(g.permissions) & BigInt(0x20)) == BigInt(0x20),
