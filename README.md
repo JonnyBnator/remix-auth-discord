@@ -51,6 +51,7 @@ export interface DiscordUser {
   displayName: DiscordProfile["displayName"];
   avatar: DiscordProfile["__json"]["avatar"];
   email: DiscordProfile["__json"]["email"];
+  locale?: string;
   guilds?: Array<CustomDiscordGuild>;
   accessToken: string;
   refreshToken: string;
