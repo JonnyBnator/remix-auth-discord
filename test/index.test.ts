@@ -74,6 +74,34 @@ describe(DiscordStrategy, () => {
     }
   });
 
+  test("should require integrationType when scope `applications.commands` is added", async () => {
+    try {
+      const strategy = new DiscordStrategy(
+        {
+          clientID: "CLIENT_ID",
+          clientSecret: "CLIENT_SECRET",
+          callbackURL: "https://example.app/callback",
+          scope: ["email", "applications.commands", "identify"],
+        },
+        verify,
+      );
+
+      const request = new Request("https://example.app/auth/discord");
+
+      await strategy.authenticate(request, sessionStorage, {
+        sessionKey: "user",
+        sessionErrorKey: "auth:error",
+        sessionStrategyKey: "strategy",
+        name: "__session",
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe(
+        "integrationType is required when scope contains applications.commands",
+      );
+    }
+  });
+
   test("should correctly format the authorization URL", async () => {
     const strategy = new DiscordStrategy(
       {

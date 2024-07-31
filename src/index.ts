@@ -135,6 +135,16 @@ export interface DiscordStrategyOptions {
    * @default ["identify", "email"]
    */
   scope?: Array<DiscordScope>;
+  /**
+   * The integration_type parameter specifies the installation context for the authorization.
+   * The installation context determines where the application will be installed,
+   * and is only relevant when scope contains applications.commands.
+   * When set to 0 (GUILD_INSTALL) the application will be authorized for installation to a server,
+   * and when set to 1 (USER_INSTALL) the application will be authorized for installation to a user.
+   * The application must be configured in the Developer Portal to support the provided integration_type.
+   */
+  // if scope contains applications.commands, integration_type is required
+  integrationType?: 0 | 1;
   prompt?: "none" | "consent";
 }
 
@@ -238,6 +248,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
   name = DiscordStrategyDefaultName;
 
   scope: string;
+  private integrationType: DiscordStrategyOptions["integrationType"];
   private prompt?: "none" | "consent";
   private userInfoURL = `${discordApiBaseURL}/users/@me`;
 
@@ -247,6 +258,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
       clientSecret,
       callbackURL,
       scope,
+      integrationType,
       prompt,
     }: DiscordStrategyOptions,
     verify: StrategyVerifyCallback<
@@ -266,7 +278,11 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     );
 
     this.scope = (scope ?? ["identify", "email"]).join(" ");
-
+    if (scope?.includes("applications.commands") && !integrationType)
+      throw new Error(
+        "integrationType is required when scope contains applications.commands",
+      );
+    this.integrationType = integrationType;
     this.prompt = prompt;
   }
 
@@ -274,6 +290,8 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const params = new URLSearchParams({
       scope: this.scope,
     });
+    if (this.integrationType)
+      params.set("integration_type", this.integrationType.toString());
     if (this.prompt) params.set("prompt", this.prompt);
     return params;
   }
