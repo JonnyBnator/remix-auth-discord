@@ -45,7 +45,7 @@ export type DiscordScope =
  * These are all the available Guild Features
  * @see https://discord.com/developers/docs/resources/guild#guild-object-guild-features
  */
-type DiscordGuildFeature =
+export type DiscordGuildFeature =
   | "ANIMATED_BANNER"
   | "ANIMATED_ICON"
   | "APPLICATION_COMMAND_PERMISSIONS_V2"
@@ -78,7 +78,7 @@ type DiscordGuildFeature =
  * These are all the available Discord locales
  * @see https://discord.com/developers/docs/reference#locales
  */
-type DiscordLocale =
+export type DiscordLocale =
   | "id"
   | "da"
   | "de"
