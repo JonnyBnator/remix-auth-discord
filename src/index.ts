@@ -283,10 +283,18 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     );
 
     this.scope = (scope ?? ["identify", "email"]).join(" ");
-    if (scope?.includes("applications.commands") && !integrationType)
+    if (
+      scope?.includes("applications.commands") &&
+      integrationType === undefined
+    )
       throw new Error(
         "integrationType is required when scope contains applications.commands",
       );
+    if (
+      integrationType &&
+      !Object.values(DiscordIntegrationType).includes(integrationType)
+    )
+      throw new Error("integrationType must be a valid DiscordIntegrationType");
     this.integrationType = integrationType;
     this.prompt = prompt;
   }
