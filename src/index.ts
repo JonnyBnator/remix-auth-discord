@@ -42,6 +42,20 @@ export type DiscordScope =
   | "webhook.incoming";
 
 /**
+ * The integration_type parameter specifies the installation context for the authorization.
+ * The installation context determines where the application will be installed,
+ * and is only relevant when scope contains applications.commands.
+ * When set to 0 (GUILD_INSTALL) the application will be authorized for installation to a server,
+ * and when set to 1 (USER_INSTALL) the application will be authorized for installation to a user.
+ * The application must be configured in the Developer Portal to support the provided integration_type.
+ * @see https://discord.com/developers/docs/resources/application#application-object-application-integration-types
+ */
+export enum DiscordIntegrationType {
+  GUILD_INSTALL = 0,
+  USER_INSTALL = 1,
+}
+
+/**
  * These are all the available Guild Features
  * @see https://discord.com/developers/docs/resources/guild#guild-object-guild-features
  */
@@ -135,6 +149,7 @@ export interface DiscordStrategyOptions {
    * @default ["identify", "email"]
    */
   scope?: Array<DiscordScope>;
+  integrationType?: DiscordIntegrationType;
   prompt?: "none" | "consent";
 }
 
@@ -238,6 +253,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
   name = DiscordStrategyDefaultName;
 
   scope: string;
+  private integrationType?: DiscordStrategyOptions["integrationType"];
   private prompt?: "none" | "consent";
   private userInfoURL = `${discordApiBaseURL}/users/@me`;
 
@@ -247,6 +263,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
       clientSecret,
       callbackURL,
       scope,
+      integrationType,
       prompt,
     }: DiscordStrategyOptions,
     verify: StrategyVerifyCallback<
@@ -266,7 +283,19 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     );
 
     this.scope = (scope ?? ["identify", "email"]).join(" ");
-
+    if (
+      scope?.includes("applications.commands") &&
+      integrationType === undefined
+    )
+      throw new Error(
+        "integrationType is required when scope contains applications.commands",
+      );
+    if (
+      integrationType &&
+      !Object.values(DiscordIntegrationType).includes(integrationType)
+    )
+      throw new Error("integrationType must be a valid DiscordIntegrationType");
+    this.integrationType = integrationType;
     this.prompt = prompt;
   }
 
@@ -274,6 +303,8 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const params = new URLSearchParams({
       scope: this.scope,
     });
+    if (this.integrationType)
+      params.set("integration_type", this.integrationType.toString());
     if (this.prompt) params.set("prompt", this.prompt);
     return params;
   }
