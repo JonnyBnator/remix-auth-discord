@@ -82,6 +82,46 @@ describe(DiscordStrategy, () => {
     );
   });
 
+  test("should correctly set the integrationType to 0", async () => {
+    await testDiscordStrategy(
+      {
+        scope: ["email", "applications.commands", "identify"],
+        integrationType: 0,
+      },
+      (error) => {
+        if (!(error instanceof Response)) throw error;
+        expect(error).toBeInstanceOf(Response);
+        const location = error.headers.get("Location");
+
+        if (!location) throw new Error("No redirect header");
+
+        const redirectUrl = new URL(location);
+
+        expect(redirectUrl.searchParams.get("integration_type")).toBe("0");
+      },
+    );
+  });
+
+  test("should correctly set the integrationType to 1", async () => {
+    await testDiscordStrategy(
+      {
+        scope: ["email", "applications.commands", "identify"],
+        integrationType: 1,
+      },
+      (error) => {
+        if (!(error instanceof Response)) throw error;
+        expect(error).toBeInstanceOf(Response);
+        const location = error.headers.get("Location");
+
+        if (!location) throw new Error("No redirect header");
+
+        const redirectUrl = new URL(location);
+
+        expect(redirectUrl.searchParams.get("integration_type")).toBe("1");
+      },
+    );
+  });
+
   test("should correctly format the authorization URL", async () => {
     await testDiscordStrategy({}, (error) => {
       if (!(error instanceof Response)) throw error;
