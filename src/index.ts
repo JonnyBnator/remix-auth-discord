@@ -291,7 +291,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
         "integrationType is required when scope contains applications.commands",
       );
     if (
-      integrationType &&
+      integrationType !== undefined &&
       !Object.values(DiscordIntegrationType).includes(integrationType)
     )
       throw new Error("integrationType must be a valid DiscordIntegrationType");
@@ -303,7 +303,7 @@ export class DiscordStrategy<User> extends OAuth2Strategy<
     const params = new URLSearchParams({
       scope: this.scope,
     });
-    if (this.integrationType)
+    if (this.integrationType !== undefined)
       params.set("integration_type", this.integrationType.toString());
     if (this.prompt) params.set("prompt", this.prompt);
     return params;
